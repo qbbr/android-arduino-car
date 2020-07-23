@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">arduino-car</string>
+    <string name="action_exit">Exit</string>
+    <string name="device_not_chosen">device: not chosen</string>
+    <string name="btn_choose_device">choose device</string>
+    <string name="btn_controls">Controls</string>
+</resources>
