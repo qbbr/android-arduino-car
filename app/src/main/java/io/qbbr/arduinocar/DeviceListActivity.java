@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class DeviceListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class DeviceListActivity extends AppCompatActivity implements AdapterView
         listView.setOnItemClickListener(this);
         listView.setAdapter(adapter);
 
-        Set<BluetoothDevice> pairedDevices = MainActivity.bluetooth.getBondedDevices();
+        Set<BluetoothDevice> pairedDevices = G.bluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 Device newDevice = new Device(device.getName(), device.getAddress(), false);
@@ -42,7 +42,13 @@ public class DeviceListActivity extends AppCompatActivity implements AdapterView
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Device device = (Device) view.getTag();
-        MainActivity.chooseDevice(getApplicationContext(), device);
+
+        if (!G.connect(device)) {
+            Toast.makeText(this, "Could'n connect", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Connected", Toast.LENGTH_LONG).show();
+        }
+
         finish();
     }
 

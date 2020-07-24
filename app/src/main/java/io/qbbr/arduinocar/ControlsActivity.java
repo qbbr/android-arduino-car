@@ -14,12 +14,11 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ControlsActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    public static Handler handler;
     private StringBuilder sb = new StringBuilder();
-    private ConnectedThread connectedThread;
 
     public static final char CMD_FORWARD_LEFT = 'l';
     public static final char CMD_FORWARD = 'f';
@@ -104,13 +103,13 @@ public class ControlsActivity extends AppCompatActivity implements View.OnClickL
 
         tvArduino = findViewById(R.id.tvArduino);
 
-        handler = new Handler() {
+        G.connectThread.setHandler(new Handler() {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
 
                 switch (msg.what) {
-                    case ConnectedThread.RECIEVE_MESSAGE:
+                    case ConnectThread.RECEIVE_MESSAGE:
                         byte[] readBuf = (byte[]) msg.obj;
                         String strIncom = new String(readBuf, 0, msg.arg1);
                         sb.append(strIncom);
@@ -120,58 +119,64 @@ public class ControlsActivity extends AppCompatActivity implements View.OnClickL
                             sb.delete(0, sb.length());
                             tvArduino.setText("Arduino answer: " + sbprint);
                         }
-                        Log.d(MainActivity.LOG_TAG, "str: " + sb.toString() + ", b:" + msg.arg1);
+                        Log.d(G.LOG_TAG, "str: " + sb.toString() + ", b:" + msg.arg1);
                         break;
                 }
             }
-        };
+        });
 
-        connectedThread = new ConnectedThread(MainActivity.bluetoothSocket, handler);
-        connectedThread.start();
+        if (G.connectThread.getState() == Thread.State.NEW) {
+            G.connectThread.start();
+        }
+
+        if (!G.connectThread.isAlive()) {
+            G.connectThread.cancel();
+            finishWithError();
+        }
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnForwardLeft:
-                connectedThread.write(CMD_FORWARD_LEFT);
+                write(CMD_FORWARD_LEFT);
                 break;
             case R.id.btnForward:
-                connectedThread.write(CMD_FORWARD);
+                write(CMD_FORWARD);
                 break;
             case R.id.btnForwardRight:
-                connectedThread.write(CMD_FORWARD_RIGHT);
+                write(CMD_FORWARD_RIGHT);
                 break;
             case R.id.btnRotateLeft:
-                connectedThread.write(CMD_ROTATE_LEFT);
+                write(CMD_ROTATE_LEFT);
                 break;
             case R.id.btnStop:
-                connectedThread.write(CMD_STOP);
+                write(CMD_STOP);
                 break;
             case R.id.btnRotateRight:
-                connectedThread.write(CMD_ROTATE_RIGHT);
+                write(CMD_ROTATE_RIGHT);
                 break;
             case R.id.btnBackwardLeft:
-                connectedThread.write(CMD_BACKWARD_LEFT);
+                write(CMD_BACKWARD_LEFT);
                 break;
             case R.id.btnBackward:
-                connectedThread.write(CMD_BACKWARD);
+                write(CMD_BACKWARD);
                 break;
             case R.id.btnBackwardRight:
-                connectedThread.write(CMD_BACKWARD_RIGHT);
+                write(CMD_BACKWARD_RIGHT);
                 break;
             case R.id.btnDistance:
 //                setDistance(12);
-                connectedThread.write(CMD_GET_DISTANCE);
+                write(CMD_GET_DISTANCE);
                 break;
             case R.id.radioBtnServoLeft:
-                connectedThread.write(CMD_SERVO_LEFT);
+                write(CMD_SERVO_LEFT);
                 break;
             case R.id.radioBtnServoMid:
-                connectedThread.write(CMD_SERVO_MID);
+                write(CMD_SERVO_MID);
                 break;
             case R.id.radioBtnServoRight:
-                connectedThread.write(CMD_SERVO_RIGHT);
+                write(CMD_SERVO_RIGHT);
                 break;
         }
     }
@@ -191,7 +196,7 @@ public class ControlsActivity extends AppCompatActivity implements View.OnClickL
 
     private void setSpeed(int i) {
         // speed values: 0-9
-        connectedThread.write(Character.forDigit(i - 1, 10));
+        write(Character.forDigit(i - 1, 10));
         tvSpeed.setText("Speed: " + String.valueOf(i));
     }
 
@@ -212,5 +217,16 @@ public class ControlsActivity extends AppCompatActivity implements View.OnClickL
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void write(char data) {
+        if (!G.connectThread.write(data)) {
+            finishWithError();
+        }
+    }
+
+    private void finishWithError() {
+        Toast.makeText(this, "ConnectThread is'n alive", Toast.LENGTH_LONG).show();
+        finish();
     }
 }

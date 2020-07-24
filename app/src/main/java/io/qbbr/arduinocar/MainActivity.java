@@ -5,9 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,20 +15,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.util.UUID;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static BluetoothAdapter bluetooth;
-    private static BluetoothDevice bluetoothDevice;
-    public static BluetoothSocket bluetoothSocket;
-    private final static String MY_UUID = "00001101-0000-1000-8000-00805f9b34fb";
     private static final int REQUEST_ENABLE_BT = 1;
-    public static final String LOG_TAG = "arduinocar";
 
-    static TextView tvCurrentDevice;
-    static Button btnControls;
+    TextView tvCurrentDevice;
+    Button btnControls;
     Button btnChooseDevice;
 
     @Override
@@ -39,15 +28,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bluetooth = BluetoothAdapter.getDefaultAdapter();
+        G.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        if (bluetooth == null) {
+        if (G.bluetoothAdapter == null) {
             Toast.makeText(this, "You device doesn't support Bluetooth", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
-        if (!bluetooth.isEnabled()) {
+        if (!G.bluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
@@ -67,17 +56,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode) {
             case REQUEST_ENABLE_BT:
                 if (resultCode == Activity.RESULT_OK) {
-                    Log.d(LOG_TAG, "BT enabled");
+                    Log.d(G.LOG_TAG, "BT enabled");
                     Toast.makeText(this, "Bluetooth has turned ON", Toast.LENGTH_SHORT).show();
 
                 } else {
-                    Log.d(LOG_TAG, "BT not enabled");
+                    Log.d(G.LOG_TAG, "BT not enabled");
                     Toast.makeText(this, "Problem in BT Turning ON", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 break;
             default:
-                Log.e(LOG_TAG, "wrong request code");
+                Log.e(G.LOG_TAG, "wrong request code");
                 break;
         }
     }
@@ -115,23 +104,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public static void chooseDevice(Context context, Device device) {
-        bluetoothDevice = bluetooth.getRemoteDevice(device.getAddress());
-//        UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-        try {
-            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(MY_UUID));
-            bluetoothSocket.connect();
-        } catch (IOException e) {
-//            e.printStackTrace();
-            Log.e(LOG_TAG, "bt connection error", e);
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
+        Log.d(G.LOG_TAG, "onResume");
 
-        if (bluetoothSocket.isConnected()) {
-            bluetooth.cancelDiscovery();
-            tvCurrentDevice.setText("connected to device " + device.getName());
+        if (G.connectThread != null && G.connectThread.isConnected()) {
+            tvCurrentDevice.setText("connected to device " + G.bluetoothDevice.getName());
             btnControls.setEnabled(true);
+        } else {
+            tvCurrentDevice.setText(R.string.device_not_chosen);
+            btnControls.setEnabled(false);
         }
     }
 }
