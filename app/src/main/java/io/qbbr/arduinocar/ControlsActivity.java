@@ -110,16 +110,18 @@ public class ControlsActivity extends AppCompatActivity implements View.OnClickL
 
                 switch (msg.what) {
                     case ConnectThread.RECEIVE_MESSAGE:
-                        byte[] readBuf = (byte[]) msg.obj;
-                        String strIncom = new String(readBuf, 0, msg.arg1);
-                        sb.append(strIncom);
+                        String readMsg = (String) msg.obj;
+                        Log.d(G.LOG_TAG, "readMsg: " + readMsg);
+                        sb.append(readMsg);
                         int endOfLineIndex = sb.indexOf("\r\n");
                         if (endOfLineIndex > 0) {
-                            String sbprint = sb.substring(0, endOfLineIndex);
+                            String printMsg = sb.substring(0, endOfLineIndex);
+                            Log.d(G.LOG_TAG, "printMsg" + printMsg);
+                            if (!printMsg.startsWith("[D]")) { // skjp debug msg
+                                tvArduino.setText("Arduino answer: " + printMsg);
+                            }
                             sb.delete(0, sb.length());
-                            tvArduino.setText("Arduino answer: " + sbprint);
                         }
-                        Log.d(G.LOG_TAG, "str: " + sb.toString() + ", b:" + msg.arg1);
                         break;
                 }
             }

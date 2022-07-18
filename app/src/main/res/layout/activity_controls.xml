@@ -159,12 +159,16 @@
                     android:min="1"
                     android:max="10"/>
             </TableRow>
-        </TableLayout>
 
-        <TextView
-            android:id="@+id/tvArduino"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <TableRow>
+                <TextView
+                    android:id="@+id/tvArduino"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_span="3"
+                    android:textAlignment="center"/>
+            </TableRow>
+        </TableLayout>
 
     </LinearLayout>
 

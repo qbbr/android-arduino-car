@@ -86,7 +86,8 @@ public class ConnectThread extends Thread {
         while (true) {
             try {
                 bytes = inputStream.read(buffer);
-                handler.obtainMessage(RECEIVE_MESSAGE, bytes, -1, buffer).sendToTarget();
+                String readMsg = new String(buffer, 0, bytes);
+                handler.obtainMessage(RECEIVE_MESSAGE, bytes, -1, readMsg).sendToTarget();
             } catch (IOException e) {
                 break;
             }
