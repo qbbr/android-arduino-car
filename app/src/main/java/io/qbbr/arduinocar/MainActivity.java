@@ -94,8 +94,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnChooseDevice:
-                Intent intent2 = new Intent(this, DeviceListActivity.class);
-                startActivity(intent2);
+                if (btnChooseDevice.getText() == getResources().getString(R.string.btn_choose_device)) {
+                    Intent intent2 = new Intent(this, DeviceListActivity.class);
+                    startActivity(intent2);
+                } else {
+                    G.connectThread.cancel();
+                    finish();
+                    startActivity(getIntent());
+                }
                 break;
             case R.id.btnControls:
                 Intent intent = new Intent(this, ControlsActivity.class);
@@ -112,9 +118,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (G.connectThread != null && G.connectThread.isConnected()) {
             tvCurrentDevice.setText("connected to device " + G.bluetoothDevice.getName());
+            btnChooseDevice.setText(R.string.btn_disconnect);
             btnControls.setEnabled(true);
         } else {
             tvCurrentDevice.setText(R.string.device_not_chosen);
+            btnChooseDevice.setText(R.string.btn_choose_device);
             btnControls.setEnabled(false);
         }
     }

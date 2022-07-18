@@ -3,5 +3,6 @@
     <string name="action_exit">Exit</string>
     <string name="device_not_chosen">device: not chosen</string>
     <string name="btn_choose_device">choose device</string>
-    <string name="btn_controls">Controls</string>
+    <string name="btn_disconnect">disconnect</string>
+    <string name="btn_controls">controls</string>
 </resources>
