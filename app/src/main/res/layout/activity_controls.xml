@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -92,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_span="3"
                     android:textAlignment="center"
-                    android:text="Distance"/>
+                    android:text="@string/tv_distance"/>
             </TableRow>
 
             <TableRow>
@@ -101,7 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_span="3"
-                    android:text="get distance" />
+                    android:text="@string/btn_get_distance" />
             </TableRow>
 
             <TableRow
@@ -111,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_span="3"
                     android:textAlignment="center"
-                    android:text="Sonar Servo"/>
+                    android:text="@string/tv_sonar_servo"/>
             </TableRow>
 
             <TableRow>
@@ -125,17 +124,17 @@
                         android:id="@+id/radioBtnServoLeft"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Left" />
+                        android:text="@string/rb_servo_left" />
                     <RadioButton
                         android:id="@+id/radioBtnServoMid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Mid" />
+                        android:text="@string/rb_servo_mid" />
                     <RadioButton
                         android:id="@+id/radioBtnServoRight"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Right" />
+                        android:text="@string/rb_servo_right" />
                 </RadioGroup>
             </TableRow>
 
@@ -147,7 +146,7 @@
                     android:layout_height="wrap_content"
                     android:layout_span="3"
                     android:textAlignment="center"
-                    android:text="Speed: 1"/>
+                    android:text="@string/tv_speed_1"/>
             </TableRow>
 
             <TableRow>

@@ -1,8 +1,16 @@
 <resources>
     <string name="app_name">arduino-car</string>
     <string name="action_exit">Exit</string>
+    <string name="action_github">GitHub</string>
     <string name="device_not_chosen">device: not chosen</string>
     <string name="btn_choose_device">choose device</string>
     <string name="btn_disconnect">disconnect</string>
     <string name="btn_controls">controls</string>
+    <string name="btn_get_distance">get distance</string>
+    <string name="rb_servo_left">L</string>
+    <string name="rb_servo_mid">M</string>
+    <string name="rb_servo_right">R</string>
+    <string name="tv_speed_1">Speed: 1</string>
+    <string name="tv_sonar_servo">Sonar Servo</string>
+    <string name="tv_distance">Distance</string>
 </resources>
