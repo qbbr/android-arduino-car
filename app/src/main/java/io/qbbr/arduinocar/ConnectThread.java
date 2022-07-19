@@ -8,6 +8,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class ConnectThread extends Thread {
@@ -81,13 +82,21 @@ public class ConnectThread extends Thread {
     public void run() {
         super.run();
 
-        byte[] buffer = new byte[256];
-        int bytes;
+        byte[] packetBytes;
+        int bytesAvailable;
+        int bytesRead;
+        String readMsg;
+
         while (true) {
             try {
-                bytes = inputStream.read(buffer);
-                String readMsg = new String(buffer, 0, bytes);
-                handler.obtainMessage(RECEIVE_MESSAGE, bytes, -1, readMsg).sendToTarget();
+                bytesAvailable = inputStream.available();
+                if (bytesAvailable > 0) {
+                    packetBytes = new byte[bytesAvailable];
+                    bytesRead = inputStream.read(packetBytes);
+                    readMsg = new String(packetBytes, StandardCharsets.US_ASCII);
+                    readMsg = readMsg.substring(0, bytesRead);
+                    handler.obtainMessage(RECEIVE_MESSAGE, bytesRead, -1, readMsg).sendToTarget();
+                }
             } catch (IOException e) {
                 break;
             }

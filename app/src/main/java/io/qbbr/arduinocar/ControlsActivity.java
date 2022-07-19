@@ -3,6 +3,7 @@ package io.qbbr.arduinocar;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,9 @@ public class ControlsActivity extends AppCompatActivity implements View.OnClickL
     public static final char CMD_SERVO_LEFT = 'a';
     public static final char CMD_SERVO_RIGHT = 'd';
     public static final char CMD_GET_DISTANCE = 'g';
+
+    private static final String ARDUINO_VAR_DISTANCE = "$distance: ";
+    private static final String ARDUINO_END_OF_LINE = "\r\n";
 
     ImageButton btnForwardLeft;
     ImageButton btnForward;
@@ -105,14 +109,18 @@ public class ControlsActivity extends AppCompatActivity implements View.OnClickL
                 switch (msg.what) {
                     case ConnectThread.RECEIVE_MESSAGE:
                         String readMsg = (String) msg.obj;
-                        Log.d(G.LOG_TAG, "readMsg: " + readMsg);
                         sb.append(readMsg);
-                        int endOfLineIndex = sb.indexOf("\r\n");
+                        int endOfLineIndex = sb.indexOf(ARDUINO_END_OF_LINE);
                         if (endOfLineIndex > 0) {
-                            String printMsg = sb.substring(0, endOfLineIndex);
-                            Log.d(G.LOG_TAG, "printMsg" + printMsg);
-                            if (!printMsg.startsWith("[D]")) { // skjp debug msg
-                                tvArduino.setText("Arduino answer: " + printMsg);
+                            String data = sb.substring(0, endOfLineIndex);
+                            Log.d(G.LOG_TAG, "data: '" + data + "'");
+                            if (!data.startsWith("[D]")) { // skjp debug msg
+                                tvArduino.setText(Html.fromHtml("<u>Arduino answer</u>:\n" + "<b>" + data + "</b>", Html.FROM_HTML_MODE_LEGACY));
+
+                                if (data.startsWith(ARDUINO_VAR_DISTANCE)) {
+                                    String distance = data.substring(data.indexOf(':') + 2);
+                                    tvDistance.setText(Html.fromHtml("<b>" + distance + "</b>", Html.FROM_HTML_MODE_LEGACY));
+                                }
                             }
                             sb.delete(0, sb.length());
                         }
